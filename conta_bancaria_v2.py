@@ -1,3 +1,6 @@
+import textwrap
+
+
 def saque(*,
           saldo,
           valor,
@@ -43,16 +46,70 @@ def valor_input(operation):
     return deposito
 
 
-def painel():
+def criar_usuario(usuarios):
+    cpf = input('Informe o CPF: ')
+    userExist = user(cpf, usuarios)
+    if userExist:
+        print('Não é possivel criar outro usuario como mesmo cpf')
+        return
+
+    name = input('Informe o nome: ')
+    birtyday = input('Informe a data de nascimento (dd-mm-aaaa): ')
+    endereco = input(
+        "Informe o endereço (logradouro, nro - bairro - cidade/sigla estado): "
+        )
+    usuarios.append({
+        "nome": name,
+        "data_nascimento": birtyday,
+        "cpf": cpf,
+        "endereco": endereco
+    })
+
+
+def user(cpf, usuarios):
+    userByCpf = [usuario for usuario in usuarios if usuario[cpf] == cpf]
+    return userByCpf[0] if userByCpf else None
+
+
+def criar_conta(contas, usuarios):
+    cpf = input("Informe o CPF do usuário: ")
+    usuario = user(cpf, usuarios)
+    agencia = '0001'
+    numero_conta = len(contas) + 1
+    if user:
+        contas.append({
+            "agencia": agencia,
+            "numero_conta": numero_conta,
+            "usuario": usuario
+        })
+
+
+def listar_contas(contas):
+    for conta in contas:
+        linha = f"""\
+            Agência:\t{conta['agencia']}
+            C/C:\t\t{conta['numero_conta']}
+            Titular:\t{conta['usuario']['nome']}
+        """
+        print("=" * 100)
+        print(textwrap.dedent(linha))
+
+
+def painel_to_account():
     lim_saque = 3
     saldo = 0.00
-    option = '4'
+    option = '0'
     number_saque = 0
     extrato_da_conta = []
     max_saque = 500.00
+    usuarios = []
+    contas = []
     while option != 'q':
         option = input('''
 digite os valor para as opções:
+[n] novo usuário;
+[c] nova conta;
+[l] lista as contas;
 [d] Depósito;
 [s] Saque;
 [e] Saldo;
@@ -77,6 +134,12 @@ Opção: ''')
                 number_saque += 1
         elif option == 'e':
             extrato(saldo, extrato_da_conta=extrato_da_conta)
+        elif option == 'n':
+            criar_usuario(usuarios)
+        elif option == 'c':
+            criar_conta(contas, usuarios)
+        elif option == 'l':
+            listar_contas(contas)
         elif option == 'q':
             print('\n\ntchau!\n\n')
         else:
@@ -84,4 +147,4 @@ Opção: ''')
 
 
 if __name__ == '__main__':
-    painel()
+    painel_to_account()
